@@ -1,0 +1,67 @@
+if (isModule.toBoolean()) {
+    apply plugin: 'com.android.application'
+} else {
+    apply plugin: 'com.android.library'
+}
+apply plugin: 'com.jakewharton.butterknife'
+
+android {
+    compileSdkVersion Integer.parseInt(COMPILE_SDK_VERSION)
+
+
+    defaultConfig {
+        if (isModule.toBoolean()){
+            applicationId "com.lianwei.module_main"
+        }
+        minSdkVersion Integer.parseInt(MIN_SDK_VERSION)
+        targetSdkVersion Integer.parseInt(TARGET_SDK_VERSION)
+        versionCode Integer.parseInt(VERSION_CODE)
+        versionName VERSION_NAME
+
+        //设置资源文件命名加上约束，解耦
+        resourcePrefix "main_"
+
+        //指定模块化和非模块化模式下不同的AndroidManifest文件路径
+        sourceSets{
+            main{
+                if (isModule.toBoolean()){
+                    manifest.srcFile 'src/main/buildModule/AndroidManifest.xml'
+                }else{
+                    manifest.srcFile 'src/main/buildApp/AndroidManifest.xml'
+                }
+            }
+        }
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [AROUTER_MODULE_NAME: project.getName()]
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(path: ':base')
+    implementation project(path: ':router')
+
+    implementation 'com.google.android.material:material:1.2.0-alpha02'
+
+    annotationProcessor "com.jakewharton:butterknife-compiler:10.2.0"
+    annotationProcessor 'com.alibaba:arouter-compiler:1.2.2'
+}

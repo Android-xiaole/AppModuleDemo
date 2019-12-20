@@ -1,0 +1,2 @@
+include ':app', ':base', ':module_live', ':router', ':module_main', ':module_home'
+rootProject.name='yazi'
